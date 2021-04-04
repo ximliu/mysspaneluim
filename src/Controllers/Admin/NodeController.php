@@ -396,6 +396,9 @@ class NodeController extends AdminController
                 case 14:
                     $sort = 'Trojan';
                     break;
+                case 15:
+                    $sort = 'V2ray VLESS 节点';
+                    break;
                 default:
                     $sort = '系统保留';
             }
