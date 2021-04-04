@@ -57,21 +57,38 @@ class AppURI
         switch ($item['type']) {
             case 'vmess':
                 $node = [
-                    'v'     => 2,
-                    'ps'    => $item['remark'],
-                    'add'   => $item['add'],
-                    'port'  => $item['port'],
-                    'id'    => $item['id'],
-                    'aid'   => $item['aid'],
-                    'net'   => $item['net'],
-                    'type'  => $item['headerType'],
-                    'host'  => $item['host'],
-                    'path'  => $item['path'],
-                    'tls'   => $item['tls']
+                    'v' => "2",
+                    'ps' => $item['remark'],
+                    'add' => $item['add'],
+                    'port' => (string)$item['port'],
+                    'id' => $item['id'],
+                    'aid' => (string)$item['aid'],
+                    'net' => $item['net'],
+                    'type' => $item['headerType'],
+                    'host' => $item['host'],
+                    'path' => $item['path'],
+                    'tls' => $item['tls']
                 ];
                 $return = ('vmess://' . base64_encode(
-                    json_encode($node, 320)
-                ));
+                        json_encode($node, 320)
+                    ));
+                break;
+            case 'vless':
+                $node = 'vless://' . $item['id'] . '@' . $item['add'] .':'. $item['port']
+                    . '?encryption=none&type=' . $item['net'] . '&headerType=none';
+                if (isset($item['host']) && $item['host']){
+                    $node .= '&host='.$item['host'];
+                }
+                if (isset($item['path']) && $item['path']){
+                    $node .= '&path='.$item['path'];
+                }
+                if (isset($item['security']) && $item['security']){
+                    $node .= '&security='.$item['security'];
+                }
+                if (isset($item['flow']) && $item['flow']){
+                    $node .= '&flow='.$item['flow'];
+                }
+                $return = $node. '#' . $item['remark'];
                 break;
         }
         return $return;
@@ -219,7 +236,7 @@ class AppURI
                 break;
             case 'trojan':
                 // ;trojan=example.com:443, password=pwd, over-tls=true, tls-verification=true, fast-open=false, udp-relay=false, tag=trojan-tls-01
-                $return  = ('trojan=' . $item['address'] . ':' . $item['port'] . ', password=' . $item['passwd'] . ', tls-host=' . $item['host']);
+                $return = ('trojan=' . $item['address'] . ':' . $item['port'] . ', password=' . $item['passwd'] . ', tls-host=' . $item['host']);
                 $return .= ', over-tls=true, tls-verification=true';
                 $return .= (', tag=' . $item['remark']);
                 break;
@@ -267,13 +284,13 @@ class AppURI
                     break;
                 }
                 $return = [
-                    'name'        => $item['remark'],
-                    'type'        => 'ss',
-                    'server'      => $item['address'],
-                    'port'        => $item['port'],
-                    'cipher'      => $item['method'],
-                    'password'    => $item['passwd'],
-                    'udp'         => true
+                    'name' => $item['remark'],
+                    'type' => 'ss',
+                    'server' => $item['address'],
+                    'port' => $item['port'],
+                    'cipher' => $item['method'],
+                    'password' => $item['passwd'],
+                    'udp' => true
                 ];
                 if ($item['obfs'] != 'plain') {
                     switch ($item['obfs']) {
@@ -319,16 +336,16 @@ class AppURI
                 //     break;
                 // }
                 $return = [
-                    'name'            => $item['remark'],
-                    'type'            => 'ssr',
-                    'server'          => $item['address'],
-                    'port'            => $item['port'],
-                    'cipher'          => $item['method'],
-                    'password'        => $item['passwd'],
-                    'protocol'        => $item['protocol'],
-                    'protocolparam'   => $item['protocol_param'],
-                    'obfs'            => $item['obfs'],
-                    'obfsparam'       => $item['obfs_param']
+                    'name' => $item['remark'],
+                    'type' => 'ssr',
+                    'server' => $item['address'],
+                    'port' => $item['port'],
+                    'cipher' => $item['method'],
+                    'password' => $item['passwd'],
+                    'protocol' => $item['protocol'],
+                    'protocolparam' => $item['protocol_param'],
+                    'obfs' => $item['obfs'],
+                    'obfsparam' => $item['obfs_param']
                 ];
                 break;
             case 'vmess':
@@ -336,14 +353,14 @@ class AppURI
                     break;
                 }
                 $return = [
-                    'name'    => $item['remark'],
-                    'type'    => 'vmess',
-                    'server'  => $item['add'],
-                    'port'    => $item['port'],
-                    'uuid'    => $item['id'],
+                    'name' => $item['remark'],
+                    'type' => 'vmess',
+                    'server' => $item['add'],
+                    'port' => $item['port'],
+                    'uuid' => $item['id'],
                     'alterId' => $item['aid'],
-                    'cipher'  => 'auto',
-                    'udp'     => true
+                    'cipher' => 'auto',
+                    'udp' => true
                 ];
                 if ($item['net'] == 'ws') {
                     $return['network'] = 'ws';
@@ -359,12 +376,12 @@ class AppURI
                 break;
             case 'trojan':
                 $return = [
-                    'name'        => $item['remark'],
-                    'type'        => 'trojan',
-                    'server'      => $item['address'],
-                    'port'        => $item['port'],
-                    'password'    => $item['passwd'],
-                    'sni'         => $item['host']
+                    'name' => $item['remark'],
+                    'type' => 'trojan',
+                    'server' => $item['address'],
+                    'port' => $item['port'],
+                    'password' => $item['passwd'],
+                    'sni' => $item['host']
                 ];
                 break;
         }
@@ -381,11 +398,11 @@ class AppURI
                 } else {
                     if ($item['obfs'] == 'v2ray') {
                         $v2rayplugin = [
-                            'address'   => $item['address'],
-                            'port'      => (string) $item['port'],
-                            'path'      => $item['path'],
-                            'host'      => $item['host'],
-                            'mode'      => 'websocket',
+                            'address' => $item['address'],
+                            'port' => (string)$item['port'],
+                            'path' => $item['path'],
+                            'host' => $item['host'],
+                            'mode' => 'websocket',
                         ];
                         $v2rayplugin['tls'] = $item['tls'] == 'tls' ? true : false;
                         $return = ('ss://' . Tools::base64_url_encode($item['method'] . ':' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']) . '?v2ray-plugin=' . base64_encode(json_encode($v2rayplugin)) . '#' . rawurlencode($item['remark']));
@@ -437,7 +454,7 @@ class AppURI
                 $return = ('vmess://' . Tools::base64_url_encode('chacha20-poly1305:' . $item['id'] . '@' . $item['add'] . ':' . $item['port']) . '?remarks=' . rawurlencode($item['remark']) . $obfs . $tls);
                 break;
             case 'trojan':
-                $return  = ('trojan://' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']);
+                $return = ('trojan://' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']);
                 $return .= ('?peer=' . $item['host'] . '#' . rawurlencode($item['remark']));
                 break;
         }
@@ -489,12 +506,12 @@ class AppURI
         switch ($item['type']) {
             case 'ss':
                 # 666
-                $return['remarks']      = $item['remark'];
-                $return['server']       = $item['address'];
-                $return['port']         = $item['port'];
-                $return['encryption']   = $item['method'];
-                $return['password']     = $item['passwd'];
-                $plugin_options         = '';
+                $return['remarks'] = $item['remark'];
+                $return['server'] = $item['address'];
+                $return['port'] = $item['port'];
+                $return['encryption'] = $item['method'];
+                $return['password'] = $item['passwd'];
+                $plugin_options = '';
                 if ($item['obfs'] != 'plain') {
                     switch ($item['obfs']) {
                         case 'simple_obfs_http':
@@ -525,7 +542,7 @@ class AppURI
                     }
                 }
                 $return['plugin_options'] = $plugin_options;
-                $return['ratio']          = $item['ratio'];
+                $return['ratio'] = $item['ratio'];
                 break;
         }
         return $return;
@@ -537,13 +554,13 @@ class AppURI
         switch ($item['type']) {
             case 'ss':
                 # 666
-                $return['remarks']      = $item['remark'];
-                $return['server']       = $item['address'];
-                $return['server_port']  = $item['port'];
-                $return['method']       = $item['method'];
-                $return['password']     = $item['passwd'];
+                $return['remarks'] = $item['remark'];
+                $return['server'] = $item['address'];
+                $return['server_port'] = $item['port'];
+                $return['method'] = $item['method'];
+                $return['password'] = $item['passwd'];
                 if ($item['obfs'] != 'plain') {
-                    $plugin_options         = '';
+                    $plugin_options = '';
                     switch ($item['obfs']) {
                         case 'simple_obfs_http':
                             $return['plugin'] = 'simple-obfs';
@@ -583,8 +600,8 @@ class AppURI
         $return = null;
         switch ($item['type']) {
             case 'trojan':
-                $return  = ('trojan://' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']);
-                $return .= ('?peer=' . $item['host'] . '&sni=' . $item['host'] . '#' .  rawurlencode($item['remark']));
+                $return = ('trojan://' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port']);
+                $return .= ('?peer=' . $item['host'] . '&sni=' . $item['host'] . '#' . rawurlencode($item['remark']));
                 break;
         }
         return $return;

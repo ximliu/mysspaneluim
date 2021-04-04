@@ -549,6 +549,11 @@ class Tools
                 unset($item['inside_port']);
             }
         }
+        # Bob新增VLESS配置
+        if (count($server) >= 7 && $server[6] != ''){
+            $item = array_merge($item, URL::parse_args($server[6]));
+        }
+
         return $item;
     }
 

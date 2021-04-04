@@ -163,6 +163,7 @@ class URL
             $query->whereIn('node_group', $group)
                 ->where('node_class', '<=', $user->class);
         }
+
         // 等级筛选
         if (isset($rules['content']['class']) && count($rules['content']['class']) > 0) {
             $query->whereIn('node_class', $rules['content']['class']);
@@ -241,12 +242,15 @@ class URL
             case 'vmess':
                 $sort = [11, 12];
                 break;
+            case 'vless':
+                $sort = [15];
+                break;
             case 'trojan':
                 $sort = [14];
                 break;
             default:
                 $Rule['type'] = 'all';
-                $sort = [0, 10, 11, 12, 13, 14];
+                $sort = [0, 10, 11, 12, 13, 14, 15];
                 $is_ss = [0, 1];
                 break;
         }
@@ -295,12 +299,13 @@ class URL
             // 筛选 End
 
             // 其他类型单端口节点
-            if (in_array($node->sort, [11, 12, 13, 14])) {
+            if (in_array($node->sort, [11, 12, 13, 14, 15])) {
                 $node_class = [
                     11 => 'getV2RayItem',           // V2Ray
                     12 => 'getV2RayItem',           // V2Ray
                     13 => 'getV2RayPluginItem',     // Rico SS (V2RayPlugin && obfs)
                     14 => 'getTrojanItem',          // Trojan
+                    15 => 'getV2RayItem',          // V2Ray-VLESS
                 ];
                 $class = $node_class[$node->sort];
                 $item = $node->$class($user, 0, 0, 0, $emoji);
@@ -390,9 +395,10 @@ class URL
         if (strtotime($user->expire_in) < time()) {
             return $return_url;
         }
+
         $items = URL::getNew_AllItems($user, $Rule);
         foreach ($items as $item) {
-            if ($item['type'] == 'vmess') {
+            if ($item['type'] == 'vmess' || $item['type'] == 'vless') {
                 $out = LinkController::getListItem($item, 'v2rayn');
             } else {
                 $out = LinkController::getListItem($item, $Rule['type']);
@@ -468,6 +474,47 @@ class URL
                 json_encode($item, 320)
             );
         }
+        return $item;
+    }
+
+    /**
+     * 获取 V2Ray 节点
+     *
+     * @param User $user
+     * @param Node $node
+     * @param bool $arrout
+     * @param bool $emoji
+     *
+     * @return array|string
+     */
+    public static function getV2UrlVLESS($user, $node, $arrout = false, $emoji = false)
+    {
+        $item = Tools::v2Array($node->server);
+        $item['v'] = '2';
+        $item['type'] = 'vless';
+        $item['ps'] = ($emoji ? Tools::addEmoji($node->name) : $node->name);
+        $item['remark'] = $item['ps'];
+        $item['id'] = $user->getUuid();
+        $item['class'] = $node->node_class;
+        $node = 'vless://' . $item['id'] . '@' . $item['add'] .':'. $item['port']
+            . '?encryption=none&type=' . $item['net'] . '&headerType=none';
+        if (isset($item['host']) && $item['host']){
+            $node .= '&host='.$item['host'];
+        }
+        if (isset($item['path']) && $item['path']){
+            $node .= '&path='.$item['path'];
+        }
+        if (isset($item['security']) && $item['security']){
+            $node .= '&security='.$item['security'];
+        }
+        if (isset($item['flow']) && $item['flow']){
+            $node .= '&flow='.$item['flow'];
+        }
+        $node .= '#' . $item['remark'];
+        if (!$arrout) {
+            return $node;
+        }
+
         return $item;
     }
 
