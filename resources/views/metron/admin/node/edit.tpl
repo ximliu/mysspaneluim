@@ -23,7 +23,7 @@
     'origin',
     'verify_deflate',
     'auth_sha1_v4',
-    'auth_aes128_md5', 
+    'auth_aes128_md5',
     'auth_aes128_sha1',
     'auth_chain_a',
     'auth_chain_b',
@@ -74,6 +74,7 @@
                                     <p class="form-control-guide"><i class="material-icons">info</i>多个端口偏移格式：8.8.8.8;port=80#10080+443#10443</p>
                                     <p class="form-control-guide"><i class="material-icons">info</i>重写节点入口地址：8.8.8.8;server=in.nodeserver.com</p>
                                     <p class="form-control-guide"><i class="material-icons">info</i>以上两项同时使用：8.8.8.8;server=in.nodeserver.com|port=80#10080+443#10443</p>
+                                    <p class="form-control-guide"><i class="material-icons">info</i>VLESS：8.8.8.8;443;2;tcp;;server=8.8.8.8;flow=xtls-rprx-origin|security=xtls</p>
 
                                 </div>
 
@@ -84,7 +85,7 @@
                                     <p class="form-control-guide"><i class="material-icons">info</i>如果“节点地址”填写为域名，则此处的值会被忽视
                                     </p>
                                 </div>
-                                <!-- 
+                                <!--
                                 <div class="form-group form-group-label" hidden="hidden">
                                     <label class="floating-label" for="method">加密方式</label>
                                     <input class="form-control maxwidth-edit" id="method" name="method" type="text"
@@ -212,6 +213,7 @@
                                             <option value="12" {if $node->sort==12}selected{/if}>V2Ray 中转</option>
                                             <option value="13" {if $node->sort==13}selected{/if}>Shadowsocks V2Ray-Plugin&Obfs</option>
                                             <option value="14" {if $node->sort==14}selected{/if}>Trojan</option>
+                                            <option value="15" {if $node->sort==15}selected{/if}>V2Ray-VLESS</option>
                                         </select>
                                     </div>
                                 </div>
