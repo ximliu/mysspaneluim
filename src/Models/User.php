@@ -158,7 +158,7 @@ class User extends Model
                 $this->attributes['id'] . '|' . $this->attributes['passwd']
             )->toString();
         }
-        
+
         return $uuid;
     }
 
@@ -505,6 +505,19 @@ class User extends Model
     public function paidUserCount()
     {
         return self::where('class', '!=', '0')->count();
+    }
+
+    public function allUserCount()
+    {
+        return self::count();
+    }
+
+    public function transformation()
+    {
+        $all = $this->allUserCount();
+        $paid = $this->paidUserCount();
+
+        return round($paid/$all*100) .'%';
     }
 
     public function disableReason()
