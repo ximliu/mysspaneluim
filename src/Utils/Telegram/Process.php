@@ -25,10 +25,14 @@ class Process
                 ]
             );
             $update = $bot->commandsHandler(true);
-            if ($update->getCallbackQuery() !== null) {
+            $Message = $update->getMessage();
+            if ($Message->getReplyToMessage() != null) {
+                if (preg_match("/[#](.*)/", $Message->getReplyToMessage()->getText(), $match)) {
+                    new Callbacks\ReplayTicket($bot, $Message, $match[1]);
+                }
+            } else if ($update->getCallbackQuery() !== null) {
                 new Callbacks\Callback($bot, $update->getCallbackQuery());
-            }
-            if ($update->getMessage() !== null) {
+            } else if ($Message !== null) {
                 new Message($bot, $update->getMessage());
             }
         } catch (Exception $e) {
